@@ -5,10 +5,12 @@ import Header from './components/header'
 import './App.css'
 
 function App() {
+  const [revealAll, setRevealAll] = useState(false);
   const [cards, setCards] = useState(shuffle);
   const [pickOne, setPickOne] = useState(null);
   const [pickTwo, setPickTwo] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [activeGame, setActiveGame] = useState(false);
   const [wins, setWins] = useState(0);
 
   const handleClick = (card) => {
@@ -22,6 +24,18 @@ function App() {
     setPickTwo(null);
     setDisabled(false);
   }
+
+  const handleReveal = () => {
+    setRevealAll(false);
+    setTimeout(()=>{
+      setRevealAll(true);
+    }, 1000);
+  }
+
+  useEffect(()=>{
+    handleReveal();
+  },[])
+
   // if there has been any state change on the cards
   useEffect(()=>{
     //used later for if the player guesses incorrectly
@@ -66,13 +80,18 @@ function App() {
   useEffect(()=>{
 
     const checkWin = cards.filter((card) => !card.matched);
-
+    
     if(cards.length && checkWin.length < 1) {
-      setWins(wins + 1);
-      console.log('Winner!!!', wins);
-      
-      handleTurn();
-      setCards(shuffle);
+      setActiveGame(true);
+      setTimeout(() => {
+        setWins(wins + 1);
+        console.log('Winner!!!', wins);
+        setActiveGame(false);
+        handleTurn();
+        setCards(shuffle);
+        setTimeout(() => { handleReveal(); }, 1000);
+      }, 1200);
+
     }
 
   },[cards, wins]);
@@ -82,6 +101,7 @@ function App() {
     setWins(0)
     handleTurn()
     setCards(shuffle);
+    handleReveal();
   };
 
   return (
@@ -91,19 +111,39 @@ function App() {
 
       <div className='grid'>
         
-        {cards.map((card) => {
-          const {image, id, matched} = card
-
-
-          return (
-            <Card 
-              image={image} 
-              selected={card === pickOne || card === pickTwo || matched} 
-              id={id}
-              onClick={() => handleClick(card)}
-            />
-            );
-        })}
+        {/* if start or new game => reveal cards for 100ms => once done setTrue => hide cards */}
+        { !revealAll ? 
+          // Reveals all the cards 
+          cards.map((card) => {
+            const {image, id} = card
+  
+            return (
+              <Card 
+                image={image} 
+                selected={true} 
+                id={id}
+                active={activeGame}
+                onClick={() => handleClick(card)}
+              />
+              );
+          }) :
+          // Hide Cards 
+          cards.map((card) => {
+            const {image, id, matched} = card
+  
+  
+            return (
+              <Card 
+                image={image} 
+                selected={card === pickOne || card === pickTwo || matched} 
+                id={id}
+                active={activeGame}
+                onClick={() => handleClick(card)}
+              />
+              );
+          }) 
+        
+        }
       </div>
     </div>
   )
