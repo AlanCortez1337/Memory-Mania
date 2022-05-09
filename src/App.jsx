@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import shuffle from './utilities/shuffle'
 import Card from './components/card'
 import Header from './components/header'
+import ScoreBoard from './components/footer'
 import './App.css'
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
   const [pickTwo, setPickTwo] = useState(null);
   const [disabled, setDisabled] = useState(false);
   const [activeGame, setActiveGame] = useState(false);
+  const [revealStats, setRevealStats] = useState(false);
   const [wins, setWins] = useState(0);
 
   const handleClick = (card) => {
@@ -27,6 +29,8 @@ function App() {
 
   const handleReveal = () => {
     setRevealAll(false);
+    
+    setRevealStats(true);
     setTimeout(()=>{
       setRevealAll(true);
     }, 1000);
@@ -145,6 +149,7 @@ function App() {
         
         }
       </div>
+        <ScoreBoard revealScore={revealStats}/>
     </div>
   )
 }
