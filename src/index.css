@@ -153,21 +153,14 @@ button {
   }
 }
 /* ========= Footer ===================== */
-.hidden {
-  display: none;
-}
-
 .footer-card {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  /* position: relative; */
-  /* top: 100px; */
   height: 4rem;
   width: 100%;
   padding: 0.5rem;
-  
   background: var(--card);
   box-shadow: var(--shadow);
   border-radius: var(--radius);
@@ -181,11 +174,58 @@ button {
   width: 100%;
 }
 
-.reveal-stats {
-  height: 6rem;
-  gap: 20px
+.info-card {
+  position: relative;
+  bottom: -30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
 }
 
+.hidden {
+  animation: hideInfo 3000ms ease-in;
+  opacity: 0;
+}
+
+.reveal-card {
+  
+  animation: revealInfo 5000ms ease-in-out;
+}
+
+
+.reveal-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 2.5rem;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+}
+
+@keyframes revealInfo {
+  0% {
+    opacity: 0;
+    bottom: 0px;
+  }
+  10% {
+    opacity: 1;
+    bottom: -30px;
+  }
+}
+
+@keyframes hideInfo {
+  0% {
+    opacity: 1;
+    bottom: -30px;
+  }
+  10% {
+    opacity: 0;
+    bottom: 0px;
+  }
+}
 /* ========= Mobile ===================== */
 @media screen and (max-width: 720px) {
   body {

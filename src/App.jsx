@@ -13,12 +13,16 @@ function App() {
   const [disabled, setDisabled] = useState(false);
   const [activeGame, setActiveGame] = useState(false);
   const [revealStats, setRevealStats] = useState(false);
+  const [totalClicks, setTotalClicks] = useState(0);
+  const [totalErrors, setTotalErrors] = useState(0);
+  const [errors, setErrors] = useState(0);
   const [wins, setWins] = useState(0);
 
   const handleClick = (card) => {
     if(!disabled) {
       pickOne ? setPickTwo(card) : setPickOne(card);
-    }
+      setTotalClicks(totalClicks + 1);
+    } 
   }
 
   const handleTurn = () => {
@@ -29,10 +33,9 @@ function App() {
 
   const handleReveal = () => {
     setRevealAll(false);
-    
-    setRevealStats(true);
     setTimeout(()=>{
       setRevealAll(true);
+      setRevealStats(false);
     }, 1000);
   }
 
@@ -45,6 +48,7 @@ function App() {
     //used later for if the player guesses incorrectly
     let pickTimer;
     //if the user selects two cards
+    
     if(pickOne && pickTwo) {
       // check if the cards are the same
       if(pickOne.image === pickTwo.image) {
@@ -67,9 +71,11 @@ function App() {
       } else {
       // if we chose incorrectly we have to make it so that the user cant click any more cards
         setDisabled(true);
+        setErrors(errors + 1);
       // give the user a small timeout to reflect before we give them access to click again
         pickTimer = setTimeout(() => {
           handleTurn();
+          
         }, 1000);
       }
     }
@@ -79,6 +85,11 @@ function App() {
     };
   },[cards, pickOne, pickTwo]);
 
+  //if there has been some change to the mismatch clicks
+  useEffect(()=>{
+    setTotalErrors(totalErrors + 1);
+  }, [errors])
+
 
   //if the player won
   useEffect(()=>{
@@ -87,6 +98,7 @@ function App() {
     
     if(cards.length && checkWin.length < 1) {
       setActiveGame(true);
+      setRevealStats(true);
       setTimeout(() => {
         setWins(wins + 1);
         console.log('Winner!!!', wins);
@@ -105,6 +117,9 @@ function App() {
     setWins(0)
     handleTurn()
     setCards(shuffle);
+    setTotalClicks(0);
+    setErrors(0);
+    setTotalErrors(0);
     handleReveal();
   };
 
@@ -149,7 +164,12 @@ function App() {
         
         }
       </div>
-        <ScoreBoard revealScore={revealStats}/>
+        <ScoreBoard 
+          revealScore={revealStats}
+          totClicks={totalClicks}
+          totErr={totalErrors}
+          err={errors}
+        />
     </div>
   )
 }
