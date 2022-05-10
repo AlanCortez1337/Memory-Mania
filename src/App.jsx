@@ -44,10 +44,33 @@ function App() {
       setRevealAll(true);
     }, 1000);
   }
-
+  // Session Begins
   useEffect(()=>{
     handleReveal();
+    let playerScores = window.localStorage.getItem('PLAYER_SCORES');
+    if(playerScores !== null) {
+      setWins(JSON.parse(playerScores).totWins);
+      setTotalClicks(JSON.parse(playerScores).totClicks);
+      setTotalMismatches(JSON.parse(playerScores).totMismatches);
+    }
   },[])
+  // Wins, total Clicks and Misclicks changed
+  useEffect(()=>{
+    // as long as clicks is not 0 it should not override the other values to 0
+    // EX: when game intially startes, setClicks by default is 0 and it changes state from stored value
+    // hence triggers this useEffect() and overrides it to 0
+    if(totalClicks !== 0) {
+      window.localStorage.setItem('PLAYER_SCORES', JSON.stringify({
+        totWins: wins,
+        totClicks: totalClicks,
+        totMismatches: totalMismatches
+      }));
+    }
+
+
+  },[wins, totalClicks, totalMismatches])
+
+
 
   // if there has been any state change on the cards
   useEffect(()=>{
@@ -78,7 +101,6 @@ function App() {
         setDisabled(true);
         setMismatches(mismatches + 1);
         setTotalMismatches(totalMismatches + 1);
-    console.log(totalMismatches, mismatches);
       // give the user a small timeout to reflect before we give them access to click again
         pickTimer = setTimeout(() => {
           handleTurn();
@@ -121,25 +143,24 @@ function App() {
 
   const handleNewScores = () => {
     setWins(wins + 1);
-    // setTotalClicks(totalClicks + clicks);
     setTimeout(()=>{
       setClicks(0);
       setMismatches(0);   
-      
     },3000);
   }
 
   const handleNotification = () => {
     const notifications = [
-        `Wow relax, you clicked a total of ${totalClicks}`,
+        `Wow relax, you clicked a total of ${totalClicks} times`,
         `Wow you really need to remember more, you had ${totalMismatches} mismatches this game`,
         `Well I suppose ${totalMismatches} mismatches could be worse...`,
-        `Not bad you've clicked ${totalClicks} so far :)`,
+        `Not bad you've clicked ${totalClicks} times so far :)`,
+        `Don't worry I know it your ${totalMismatches} mismatches were misclicks ;)`,
         "🔥🔥💯💯 You're epic swag master 💯💯🔥🔥",
         "Did you know that you are playing a game?",
     ]
 
-    setMessage(notifications[Math.floor(Math.random() * 6)]) ;
+    setMessage(notifications[Math.floor(Math.random() * 7)]) ;
 };
 
   const handleNewGame = () => {
@@ -151,6 +172,11 @@ function App() {
     setClicks(0);
     setMismatches(0);
     handleReveal();
+    window.localStorage.setItem('PLAYER_SCORES', JSON.stringify({
+      totWins: 0,
+      totClicks: 0,
+      totMismatches: 0
+    }));
   };
 
   return (
