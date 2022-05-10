@@ -27,6 +27,8 @@ function App() {
     if(!disabled) {
       pickOne ? setPickTwo(card) : setPickOne(card);
       setClicks(clicks + 1);
+      
+    setTotalClicks(totalClicks + 1);
     } 
   }
 
@@ -37,7 +39,6 @@ function App() {
   }
 
   const handleReveal = () => {
-    handleNotification();
     setRevealAll(false);
     setTimeout(()=>{
       setRevealAll(true);
@@ -76,6 +77,8 @@ function App() {
       // if we chose incorrectly we have to make it so that the user cant click any more cards
         setDisabled(true);
         setMismatches(mismatches + 1);
+        setTotalMismatches(totalMismatches + 1);
+    console.log(totalMismatches, mismatches);
       // give the user a small timeout to reflect before we give them access to click again
         pickTimer = setTimeout(() => {
           handleTurn();
@@ -99,6 +102,7 @@ function App() {
     if(cards.length && checkWin.length < 1) {
       setActiveGame(true);
       setRevealStats(true);
+      handleNotification();
       setTimeout(() => {
         handleNewScores();
         console.log('Winner!!!', wins);
@@ -117,11 +121,11 @@ function App() {
 
   const handleNewScores = () => {
     setWins(wins + 1);
-    setTotalClicks(totalClicks + clicks);
-    setTotalMismatches(totalMismatches + mismatches);
+    // setTotalClicks(totalClicks + clicks);
     setTimeout(()=>{
       setClicks(0);
       setMismatches(0);   
+      
     },3000);
   }
 
@@ -142,9 +146,8 @@ function App() {
     setWins(0);
     handleTurn();
     setCards(shuffle);
-    // Here
-    // setTotalClicks(0);
-    // setMismatches(0);
+    setTotalClicks(0);
+    setMismatches(0);
     setClicks(0);
     setMismatches(0);
     handleReveal();
