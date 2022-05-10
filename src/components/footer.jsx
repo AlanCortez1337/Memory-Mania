@@ -1,5 +1,9 @@
-const ScoreBoard = ({revealScore, totClicks, totErr, err}) => {
+const ScoreBoard = ({revealScore, amtClicks, amtMismatches, message}) => {
+    // Clicks, Total Clicks, Total Misclicks, Misclicks
     
+
+
+
     return(
         
         <>
@@ -7,15 +11,15 @@ const ScoreBoard = ({revealScore, totClicks, totErr, err}) => {
                 
 
                 <div className="total-stats">
-                    <h3>Total Clicks: {totClicks}</h3>
-                    <h3>Mismatched: {totErr}</h3>
+                    <h3>Current Clicks: {amtClicks}</h3>
+                    <h3>Mismatched: {amtMismatches}</h3>
                 </div>
                 
             </footer>
             
             <div className={`info-card ${ revealScore ? "reveal-card": "hidden"}`} >
                 <div className="reveal-stats">
-                    Total Mismatches This game: {err}
+                    {message}
                 </div> 
             </div>
                 

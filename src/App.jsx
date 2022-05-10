@@ -13,15 +13,20 @@ function App() {
   const [disabled, setDisabled] = useState(false);
   const [activeGame, setActiveGame] = useState(false);
   const [revealStats, setRevealStats] = useState(false);
+  //Scores
   const [totalClicks, setTotalClicks] = useState(0);
-  const [totalErrors, setTotalErrors] = useState(0);
-  const [errors, setErrors] = useState(0);
+  const [clicks, setClicks] = useState(0);
+  const [totalMismatches, setTotalMismatches] = useState(0);
+  const [mismatches, setMismatches] = useState(0);
   const [wins, setWins] = useState(0);
+  //Message
+  const [message, setMessage] = useState('');
+
 
   const handleClick = (card) => {
     if(!disabled) {
       pickOne ? setPickTwo(card) : setPickOne(card);
-      setTotalClicks(totalClicks + 1);
+      setClicks(clicks + 1);
     } 
   }
 
@@ -32,10 +37,10 @@ function App() {
   }
 
   const handleReveal = () => {
+    handleNotification();
     setRevealAll(false);
     setTimeout(()=>{
       setRevealAll(true);
-      setRevealStats(false);
     }, 1000);
   }
 
@@ -48,7 +53,6 @@ function App() {
     //used later for if the player guesses incorrectly
     let pickTimer;
     //if the user selects two cards
-    
     if(pickOne && pickTwo) {
       // check if the cards are the same
       if(pickOne.image === pickTwo.image) {
@@ -71,7 +75,7 @@ function App() {
       } else {
       // if we chose incorrectly we have to make it so that the user cant click any more cards
         setDisabled(true);
-        setErrors(errors + 1);
+        setMismatches(mismatches + 1);
       // give the user a small timeout to reflect before we give them access to click again
         pickTimer = setTimeout(() => {
           handleTurn();
@@ -85,10 +89,6 @@ function App() {
     };
   },[cards, pickOne, pickTwo]);
 
-  //if there has been some change to the mismatch clicks
-  useEffect(()=>{
-    setTotalErrors(totalErrors + 1);
-  }, [errors])
 
 
   //if the player won
@@ -100,26 +100,53 @@ function App() {
       setActiveGame(true);
       setRevealStats(true);
       setTimeout(() => {
-        setWins(wins + 1);
+        handleNewScores();
         console.log('Winner!!!', wins);
         setActiveGame(false);
         handleTurn();
         setCards(shuffle);
-        setTimeout(() => { handleReveal(); }, 1000);
+        setTimeout(() => { 
+          setRevealStats(false);
+          handleReveal(); 
+        }, 1500);
       }, 1200);
 
     }
 
   },[cards, wins]);
 
+  const handleNewScores = () => {
+    setWins(wins + 1);
+    setTotalClicks(totalClicks + clicks);
+    setTotalMismatches(totalMismatches + mismatches);
+    setTimeout(()=>{
+      setClicks(0);
+      setMismatches(0);   
+    },3000);
+  }
+
+  const handleNotification = () => {
+    const notifications = [
+        `Wow relax, you clicked a total of ${totalClicks}`,
+        `Wow you really need to remember more, you had ${totalMismatches} mismatches this game`,
+        `Well I suppose ${totalMismatches} mismatches could be worse...`,
+        `Not bad you've clicked ${totalClicks} so far :)`,
+        "🔥🔥💯💯 You're epic swag master 💯💯🔥🔥",
+        "Did you know that you are playing a game?",
+    ]
+
+    setMessage(notifications[Math.floor(Math.random() * 6)]) ;
+};
 
   const handleNewGame = () => {
-    setWins(0)
-    handleTurn()
+    setWins(0);
+    handleTurn();
     setCards(shuffle);
-    setTotalClicks(0);
-    setErrors(0);
-    setTotalErrors(0);
+    // Here
+    // setTotalClicks(0);
+    // setMismatches(0);
+    setClicks(0);
+    setMismatches(0);
     handleReveal();
   };
 
@@ -165,10 +192,10 @@ function App() {
         }
       </div>
         <ScoreBoard 
-          revealScore={revealStats}
-          totClicks={totalClicks}
-          totErr={totalErrors}
-          err={errors}
+          revealScore={revealStats} //
+          amtClicks={clicks}
+          amtMismatches={mismatches}
+          message={message}
         />
     </div>
   )
